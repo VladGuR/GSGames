@@ -1,0 +1,186 @@
+{% extends 'mainapp/base.html' %}
+
+{% block title %}
+    <title>GurSd</title>
+{% endblock %}
+
+{% block content %}
+    <div class="fullgame">
+        {% for object in games %}
+            <div class="game_info_img_description">
+                <div class="game_photo_info">
+                    <div class="game-img">
+                        <img src="/media/{{ object.photo }}">
+                        <span class="object_name_320px">{{ object.name }}</span>
+                    </div>
+                    <div class="game-info">
+                        <div class="game-genre game-info-ganre-oc">Жанр:
+                            <a class="{% if request.resolver_match.url_name == 'ganre' %}active{% endif %}"
+                               href="{% url 'ganre' object.genre_name %}">
+                                {{ object.genre_name }}
+                            </a>
+                        </div>
+                        {% comment %}<div> Тег: {{ tags.all|join:", " }} </div>{% endcomment %}
+                        <div class="game-os game-info-ganre-oc">ОС: {% if object.android %}
+                            <span>Android</span>
+                        {% elif object.ios %}
+                            <span>iOS</span>
+                        {% elif object.windows %}
+                            <span>Windows</span>
+                        {% elif object.psp %}
+                            <span>PSP</span>
+                        {% elif object.xbox %}
+                            <span>Xbox</span>
+                        {% elif object.android and object.ios %}
+
+                        {% endif %}
+                        </div>
+                        <div class="game-language game-info-ganre-oc">Русский язык: {% if object.language %}
+                            <span>Присутствует</span>
+                        {% else %}
+                            <span>Отсутствует</span>
+                        {% endif %}
+                        </div>
+                        <div class="game-paidContent game-info-ganre-oc">Платный контент: {% if object.language %}
+                            <span>Присутствует</span>
+                        {% else %}
+                            <span>Отсутствует</span>
+                        {% endif %}
+                        </div>
+                        <div class="game-advertising game-info-ganre-oc">Реклама: {% if object.language %}
+                            <span>Присутствует</span>
+                        {% else %}
+                            <span>Отсутствует</span>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game_name_description">
+                    <div class="description">
+                        <div class="game-name">
+                            {% comment %}<svg class="like" fill="black" height="25px" width="25px" viewBox="0 0 512 512">
+                                <path d="M365.4,59.628c60.56,0,109.6,49.03,109.6,109.47c0,109.47-109.6,171.8-219.06,281.271    C146.47,340.898,37,278.568,37,169.099c0-60.44,49.04-109.47,109.47-109.47c54.73,0,82.1,27.37,109.47,82.1    C283.3,86.999,310.67,59.628,365.4,59.628z"/>
+                            </svg>{% endcomment %}
+                            {{ object.name }}
+                        </div>
+                        <span>Описание:</span> <br>
+                        <p>{{ object.description }}</p>
+                    </div>
+                    {% comment %}<div class="video-span-trailer">
+                        <span>Трейлер</span>
+                        <video src="{{ object.video }}"></video>
+                    </div>{% endcomment %}
+                </div>
+            </div>
+        {% endfor %}
+
+
+        <div class="all_comments">
+            {% for com in comment %}
+                {% if com.complaint_quantity <= 2 and com.moder_state == 0 or com.moder_state == 1 %}
+                    <div class="comments" id="id_comm{{ com.id }}">
+                        <div class="author_comments">
+                            <div class="author_photo"><img src="/media/{{ com.author.avatar }}"></div>
+                            <div class="author_name">{{ com.author.first_name }} {{ com.author.last_name }}</div>
+                            {% if com.moder_state == 0 and user.is_authenticated %}
+                                {% if com.complaint_quantity == 0 %}
+                                    <form method="post">
+                                        <input type="hidden" name="user_complaint" id="id_user_complaint"
+                                               value="{{ user.id }}">
+                                        <input type="hidden" name="comment" id="id_comment" value="{{ com.id }}">
+                                        <input type="hidden" name="complaint_quantity" id="id_complaint_quantity"
+                                               value="1">
+                                        <button title="Отправить жалобу" type="submit" class="reporting">
+                                            <svg fill="black" width="25" height="25" viewBox="0.5 2 22 20">
+                                                <path d="M2.73,21 L21.26,21 C22.03,21 22.51,20.17 22.13,19.5 L12.86,3.5 C12.47,2.83 11.51,2.83 11.13,3.5 L1.86,19.5 C1.48,20.17 1.96,21 2.73,21 Z M13,18 L11,18 L11,16 L13,16 L13,18 Z M12,14 C11.45,14 11,13.55 11,13 L11,11 C11,10.45 11.45,10 12,10 C12.55,10 13,10.45 13,11 L13,13 C13,13.55 12.55,14 12,14 Z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                {% elif com.complaint_quantity == 1 %}
+                                    <form method="post">
+                                        <input type="hidden" name="user_complaint" id="id_user_complaint"
+                                               value="{{ user.id }}">
+                                        <input type="hidden" name="comment" id="id_comment" value="{{ com.id }}">
+                                        <input type="hidden" name="complaint_quantity" id="id_complaint_quantity"
+                                               value="2">
+                                        <button title="Отправить жалобу" type="submit" class="reporting">
+                                            <svg fill="black" width="25" height="25" viewBox="0.5 2 22 20">
+                                                <path d="M2.73,21 L21.26,21 C22.03,21 22.51,20.17 22.13,19.5 L12.86,3.5 C12.47,2.83 11.51,2.83 11.13,3.5 L1.86,19.5 C1.48,20.17 1.96,21 2.73,21 Z M13,18 L11,18 L11,16 L13,16 L13,18 Z M12,14 C11.45,14 11,13.55 11,13 L11,11 C11,10.45 11.45,10 12,10 C12.55,10 13,10.45 13,11 L13,13 C13,13.55 12.55,14 12,14 Z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                {% elif com.complaint_quantity == 2 %}
+                                    <form method="post">
+                                        <input type="hidden" name="user_complaint" id="id_user_complaint"
+                                               value="{{ user.id }}">
+                                        <input type="hidden" name="comment" id="id_comment" value="{{ com.id }}">
+                                        <input type="hidden" name="complaint_quantity" id="id_complaint_quantity"
+                                               value="3">
+                                        <button title="Отправить жалобу" type="submit" class="reporting">
+                                            <svg fill="black" width="25" height="25" viewBox="0.5 2 22 20">
+                                                <path d="M2.73,21 L21.26,21 C22.03,21 22.51,20.17 22.13,19.5 L12.86,3.5 C12.47,2.83 11.51,2.83 11.13,3.5 L1.86,19.5 C1.48,20.17 1.96,21 2.73,21 Z M13,18 L11,18 L11,16 L13,16 L13,18 Z M12,14 C11.45,14 11,13.55 11,13 L11,11 C11,10.45 11.45,10 12,10 C12.55,10 13,10.45 13,11 L13,13 C13,13.55 12.55,14 12,14 Z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="author_text_comment">
+                            <div class="text_comment">
+                                {{ com.text }}
+                            </div>
+                        </div>
+                        <div class="date_time">
+                            <div class="date">{{ com.date_added }}</div>
+                        </div>
+                        <div class="border_middle_comments"></div>
+                    </div>
+                {% endif %}
+            {% empty %}
+                <div>Напиши первый комментарий</div>
+            {% endfor %}
+
+            <div class="enter_comment">
+                {% if user.is_authenticated %}
+                    <div class="download_comment_photo">
+                        <form class="form_comment" action="" method="post">
+                            <label class="input_comment_label" for="id_avatar">
+                                <svg fill="black" width="20px" height="20px" viewBox="0 0 612.675 612.675">
+                                    <path d="M581.209,223.007L269.839,530.92c-51.592,51.024-135.247,51.024-186.839,0c-51.592-51.023-51.592-133.737,0-184.761
+                            L363.248,69.04c34.402-34.009,90.15-34.009,124.553,0c34.402,34.008,34.402,89.166,0,123.174l-280.249,277.12
+                            c-17.19,17.016-45.075,17.016-62.287,0c-17.19-16.993-17.19-44.571,0-61.587L394.37,161.42l-31.144-30.793L114.144,376.975
+                            c-34.402,34.009-34.402,89.166,0,123.174c34.402,34.009,90.15,34.009,124.552,0l280.249-277.12
+                            c51.592-51.023,51.592-133.737,0-184.761c-51.593-51.023-135.247-51.023-186.839,0L36.285,330.784l1.072,1.071
+                            c-53.736,68.323-49.012,167.091,14.5,229.88c63.512,62.79,163.35,67.492,232.46,14.325l1.072,1.072l326.942-323.31
+                            L581.209,223.007z"/>
+                                </svg>
+                                <input type="file" name="avatar" accept="image/*"
+                                       id="id_avatar" class="input-avatar"
+                                       onchange="showFileName()"/>
+                                <input title="Используем пальцы" class="text_field_comment" name="text" id="id_text"
+                                       type="text"
+                                       placeholder="Напишите комментарий">
+                                <input type="hidden" name="author" id="id_author" value="{{ user.id }}">
+                                <input type="hidden" name="game_name" id="ig_game_name" value="{{ name }}">
+                            </label>
+                            <button type="submit" class="download_comments_photo" title="Отправить">
+                                <svg fill="black" width="25" height="25" viewBox="0 0 32 32">
+                                    <path d="M19.47,31a2,2,0,0,1-1.8-1.09l-4-7.57a1,1,0,0,1,1.77-.93l4,7.57L29,3.06,3,12.49l9.8,5.26,8.32-8.32a1,1,0,0,1,1.42,1.42l-8.85,8.84a1,1,0,0,1-1.17.18L2.09,14.33a2,2,0,0,1,.25-3.72L28.25,1.13a2,2,0,0,1,2.62,2.62L21.39,29.66A2,2,0,0,1,19.61,31Z"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                    <img class="comments_photo" src="" alt="">
+                {% else %}
+                    <div>Войдите в аккаунт что бы написать коментарий. <a href="{% url 'auth:login' %}"> Войти</a></div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
